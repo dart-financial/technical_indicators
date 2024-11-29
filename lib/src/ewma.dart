@@ -29,16 +29,17 @@ class EWMA implements MovingAverage {
     double? prevValue;
 
     _next = (value) {
-      prevValue ??= value;
-
       _current = (value) {
-        return alpha * value + (1 - alpha) * prevValue!;
+        return alpha * value + (1 - alpha) * (prevValue ?? 1);
       };
 
       _next = (value) {
         prevValue = _current(value);
         return prevValue;
       };
+
+      prevValue ??= _current(value);
+
       return null;
     };
 

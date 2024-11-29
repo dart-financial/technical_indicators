@@ -25,25 +25,30 @@ class AvgChangeProvider {
       if (_prev == null) {
         _prev = value;
 
-        _next = (value) {
-          final result = calculate(value);
-          _prev = value;
-          return result;
-        };
+        return (null, null);
       }
 
-      return const (null, null);
-    };
-
-    _current = (value) {
-      if (_prev == null) {
+      _next = (value) {
+        final result = calculate(value);
         _prev = value;
+        return result;
+      };
 
-        _current = calculate;
-      }
+      _current = (value) {
+        final change = value - _prev!;
 
-      return const (null, null);
+        final upAvg = gain.current(change > 0.0 ? change : 0.0);
+        final downAvg = loss.current(change < 0.0 ? change : 0.0);
+
+        return (upAvg, downAvg);
+      };
+
+      final result = calculate(value);
+      _prev = value;
+      return result;
     };
+
+    _current = (value) => (null, null);
   }
 
   (double?, double?) current(double value) => _current(value);

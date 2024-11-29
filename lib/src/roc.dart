@@ -22,33 +22,27 @@ class ROC {
   final CircularBuffer buffer;
   final int period;
 
-  late double? Function(double value) _next;
-  late double? Function(double value) _current;
+  late double? Function(double? value) _next;
+  late double? Function(double? value) _current;
 
   /// Constructs a Rate of Change (ROC) indicator with a specified [period].
   ROC([this.period = 5]) : buffer = CircularBuffer(period) {
     _next = (value) {
       final outed = buffer.push(value);
-      if (outed != null) {
-        _next = (value) {
-          final outed = buffer.push(value);
-          return ((value - outed!) / outed) * 100;
-        };
-        _current = (value) {
-          final outed = buffer.peek();
-          return ((value - outed!) / outed) * 100;
-        };
-        return ((value - outed) / outed) * 100;
-      }
+      if (outed != null) return ((value! - outed!) / outed) * 100;
       return null;
     };
 
-    _current = (_) => null;
+    _current = (value) {
+      final outed = buffer.peek();
+      if (outed != null) return ((value! - outed!) / outed) * 100;
+      return null;
+    };
   }
 
   /// Computes the next ROC value based on a new input.
-  double? next(double value) => _next(value);
+  double? next(double? value) => _next(value);
 
   /// Computes a momentary ROC value without modifying the internal state.
-  double? current(double value) => _current(value);
+  double? current(double? value) => _current(value);
 }

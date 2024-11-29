@@ -26,9 +26,9 @@ class AC {
   late double? Function(double high, double low) _current;
 
   /// Constructs an Accelerator Oscillator with customizable AO and SMA periods.
-  AC(int? period, {int aoFastPeriod = 5, int aoSlowPeriod = 34})
+  AC([int period = 5, int aoFastPeriod = 5, int aoSlowPeriod = 34])
       : ao = AO(aoFastPeriod, aoSlowPeriod),
-        sma = SMA(period ?? 5) {
+        sma = SMA(period) {
     _next = (high, low) {
       final aoValue = ao.next(high, low);
       if (aoValue == null) {

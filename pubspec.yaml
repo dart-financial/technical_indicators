@@ -1,15 +1,26 @@
 name: technical_indicators
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: >
+  A library for high-performance technical indicators for trading and financial analysis in Dart.
+  Provides a wide range of momentum, trend, and moving average indicators optimized for real-time and historical data.
+version: 0.1.0-dev.1
+repository: https://github.com/dart-financial/technical_indicators
+homepage: https://pub.dev/packages/technical_indicators
+issue_tracker: https://github.com/dart-financial/technical_indicators/issues
+
+topics:
+  - finance
+  - indicators
+  - trading
+  - strategies
+  - technical-analysis
 
 environment:
-  sdk: ^3.5.0
-
-# Add regular dependencies here.
-dependencies:
-  # path: ^1.8.0
+  sdk: ">=3.5.0 <4.0.0"
 
 dev_dependencies:
   lints: ^4.0.0
   test: ^1.24.0
+  pedantic: ^1.11.0 # Optional for stricter lint rules
+
+examples:
+  - example/technical_indicators_example.dart

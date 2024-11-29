@@ -5,7 +5,15 @@ class DonchianChannelsData {
   final double middle;
   final double upper;
 
-  const DonchianChannelsData(this.lower, this.middle, this.upper);
+  const DonchianChannelsData(this.lower, this.upper) : middle = (upper + lower) / 2;
+
+  toMap() {
+    return {
+      "upper": upper,
+      "middle": middle,
+      "lower": lower,
+    };
+  }
 }
 
 /// **Donchian Channels**
@@ -38,30 +46,12 @@ class DonchianChannels {
       : _max = MaxProvider(period),
         _min = MinProvider(period) {
     _next = (high, low) {
-      final upper = _max.next(high);
-      final lower = _min.next(low);
-
-      if (!_max.isFull || !_min.isFull) {
-        return null;
-      }
-
-      _next = (high, low) {
-        final upper = _max.next(high);
-        final lower = _min.next(low);
-
-        return DonchianChannelsData(lower, (upper + lower) / 2, upper);
-      };
-
-      _current = (high, low) {
-        final upper = _max.current(high);
-        final lower = _min.current(low);
-        return DonchianChannelsData(lower, (upper + lower) / 2, upper);
-      };
-
-      return DonchianChannelsData(lower, (upper + lower) / 2, upper);
+      return DonchianChannelsData(_min.next(low), _max.next(high));
     };
 
-    _current = (_, __) => null;
+    _current = (high, low) {
+      return DonchianChannelsData(_min.current(low), _max.current(high));
+    };
   }
 
   /// Computes the next Donchian Channels based on high and low values.

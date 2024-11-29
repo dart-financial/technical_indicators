@@ -24,7 +24,7 @@ class CCI {
   late double? Function(double high, double low, double close) _next;
   late double? Function(double high, double low, double close) _current;
 
-  CCI({this.period = 20})
+  CCI([this.period = 20])
       : md = MeanDeviationProvider(period),
         sma = SMA(period) {
     _next = (high, low, close) {

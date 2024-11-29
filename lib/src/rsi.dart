@@ -31,7 +31,7 @@ class RSI {
     _next = (value) {
       final (upAvg, downAvg) = change.next(value);
 
-      if (upAvg != null && downAvg != null) {
+      if (upAvg != null || downAvg != null) {
         _next = (value) {
           final (upAvg, downAvg) = change.next(value);
           return 100 - 100 / (1 + (upAvg! / -downAvg!));
@@ -40,7 +40,7 @@ class RSI {
           final (upAvg, downAvg) = change.current(value);
           return 100 - 100 / (1 + (upAvg! / -downAvg!));
         };
-        return 100 - 100 / (1 + (upAvg / -downAvg));
+        return 100 - 100 / (1 + (upAvg! / -downAvg!));
       }
       return null;
     };

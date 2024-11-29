@@ -9,27 +9,37 @@ part of '../technical_indicators.dart';
 /// WWS_t = ((Previous WWS * (n - 1)) + Current Value) / n
 /// ```
 class WWS {
-  final int _period;
-  double? _previousWWS;
+  double _prevValue = 0;
+  int _sumCount = 1;
 
   late double? Function(double value) _next;
   late double? Function(double value) _current;
 
   /// Constructs a WWS with the specified [period].
-  WWS(this._period) {
+  WWS(final int period) {
     _next = (value) {
-      if (_previousWWS == null) {
-        _previousWWS = value;
-        return value;
+      if (_sumCount == period) {
+        _prevValue += value;
+        _sumCount++;
+
+        _next = (value) {
+          return (_prevValue = _prevValue - _prevValue / period + value);
+        };
+
+        _current = (value) {
+          return _prevValue - _prevValue / period + value;
+        };
+
+        return _prevValue;
       }
 
-      final smoothed = ((_previousWWS! * (_period - 1)) + value) / _period;
-      _previousWWS = smoothed;
+      _prevValue += value;
+      _sumCount++;
 
-      return smoothed;
+      return null;
     };
 
-    _current = (_) => _previousWWS;
+    _current = (_) => null;
   }
 
   /// Computes the next WWS value based on the input value.

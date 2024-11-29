@@ -24,46 +24,45 @@ class ChaikinOscillator {
 
   double _adl = 0;
 
-  late double? Function(double high, double low, double close, double volume) _next;
-  late double? Function(double high, double low, double close, double volume) _current;
+  late num? Function(double high, double low, double close, double volume) _next;
+  late num? Function(double high, double low, double close, double volume) _current;
 
   ChaikinOscillator([int fastPeriod = 3, int slowPeriod = 10])
       : emaFast = EMA(fastPeriod),
         emaSlow = EMA(slowPeriod) {
     _next = (high, low, close, volume) {
-      final mfMultiplier = ((close - low) - (high - close)) / (high - low);
-      _adl += mfMultiplier * volume;
+      _adl += (close == high && close == low) || high == low ? 0 : ((2 * close - low - high) / (high - low)) * volume;
 
-      final emaFast = this.emaFast.next(_adl);
-      final emaSlow = this.emaSlow.next(_adl);
+      final double? fast = emaFast.next(_adl);
+      final double? slow = emaSlow.next(_adl);
 
-      if (emaFast == null || emaSlow == null) {
-        return null;
-      }
+      if (fast == null || slow == null) return null;
 
       _next = (high, low, close, volume) {
-        final mfMultiplier = ((close - low) - (high - close)) / (high - low);
-        _adl += mfMultiplier * volume;
+        _adl += (close == high && close == low) || high == low ? 0 : ((2 * close - low - high) / (high - low)) * volume;
 
-        return this.emaFast.next(_adl)! - this.emaSlow.next(_adl)!;
+        final val = emaFast.next(_adl)! - emaSlow.next(_adl)!;
+        return val;
       };
 
       _current = (high, low, close, volume) {
-        final mfMultiplier = ((close - low) - (high - close)) / (high - low);
-        final adlTemp = _adl + mfMultiplier * volume;
+        final double adl = _adl +
+            ((close == high && close == low) || high == low ? 0 : ((2 * close - low - high) / (high - low)) * volume);
 
-        return this.emaFast.current(adlTemp)! - this.emaSlow.current(adlTemp)!;
+        return emaFast.current(adl)! - emaSlow.current(adl)!;
       };
 
-      return emaFast - emaSlow;
+      final val = fast - slow;
+
+      return val;
     };
 
     _current = (_, __, ___, ____) => null;
   }
 
   /// Computes the next Chaikin Oscillator value based on high, low, close, and volume.
-  double? next(double high, double low, double close, double volume) => _next(high, low, close, volume);
+  num? next(double high, double low, double close, double volume) => _next(high, low, close, volume);
 
   /// Computes a momentary Chaikin Oscillator value without affecting internal calculations.
-  double? current(double high, double low, double close, double volume) => _current(high, low, close, volume);
+  num? current(double high, double low, double close, double volume) => _current(high, low, close, volume);
 }
